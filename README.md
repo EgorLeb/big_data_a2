@@ -4,7 +4,12 @@
 ## Step 1: Install prerequisites
 - Docker
 - Docker compose
-## Step 2: Run the command
+## Step 2: Install a.parquet
+
+- install [a.parquet](https://www.kaggle.com/datasets/jjinho/wikipedia-20230701?select=a.parquet)
+- put a.parquet in ./app near the prepare_data.sh
+
+## Step 3: Run the command
 ```bash
 docker compose up 
 ```
