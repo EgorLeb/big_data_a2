@@ -1,6 +1,7 @@
 from pathvalidate import sanitize_filename
 from tqdm import tqdm
 from pyspark.sql import SparkSession
+from pyspark import StorageLevel
 
 
 spark = SparkSession.builder \
@@ -10,9 +11,8 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 
-df = spark.read.parquet("/a.parquet")
 n = 1000
-df = df.select(['id', 'title', 'text']).sample(fraction=100 * n / df.count(), seed=0).limit(n)
+df = spark.read.parquet("/a.parquet").select(['id', 'title', 'text']).persist(StorageLevel.MEMORY_AND_DISK).limit(n)
 
 
 def create_doc(row):
@@ -23,5 +23,5 @@ def create_doc(row):
 
 df.foreach(create_doc)
 
-
-# df.write.csv("/index/data", sep = "\t")
+(df.select(['id', 'title', 'text']).coalesce(1).write.format("csv").option("sep", "\t")
+ .option("header", "false").mode("overwrite").save("hdfs:///index/data"))

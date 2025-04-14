@@ -2,6 +2,8 @@
 # Start ssh server
 service ssh restart 
 
+bash init-cassandra.sh
+
 # Starting the services
 bash start-services.sh
 
@@ -13,14 +15,21 @@ source .venv/bin/activate
 pip install -r requirements.txt  
 
 # Package the virtual env.
-venv-pack -o .venv.tar.gz
+if [ ! -f ".venv.tar.gz" ]; then
+    venv-pack -o .venv.tar.gz
+else
+    echo "Virtual environment already packed. Skipping..."
+fi
 
 # Collect data
 bash prepare_data.sh
 
 
 # Run the indexer
-bash index.sh data/sample.txt
+bash index.sh
 
 # Run the ranker
-bash search.sh "this is a query!"
+bash search.sh "which is a diatonic semitone above A and G"
+
+echo "Services started. Holding the container open..."
+tail -f /dev/null
