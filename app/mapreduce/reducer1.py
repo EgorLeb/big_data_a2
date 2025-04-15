@@ -1,4 +1,5 @@
 import sys
+import uuid
 from cassandra.cluster import Cluster
 
 
@@ -14,9 +15,16 @@ def connect_cassandra():
 
 def main():
     session = connect_cassandra()
+    term_set = set()
     for line in sys.stdin:
         try:
             term, doc_id, tf = line.strip().split('\t')
+            if term not in term_set:
+                session.execute(
+                    "INSERT INTO terms (term_id, term_text) VALUES (%s, %s)",
+                    (uuid.uuid1().hex, term)
+                )
+                term_set.add(term)
             session.execute(
                 "INSERT INTO inverted_index (term_text, doc_id, tf) VALUES (%s, %s, %s)",
                 (term, doc_id, int(tf))
@@ -28,3 +36,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

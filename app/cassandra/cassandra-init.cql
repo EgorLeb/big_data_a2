@@ -1,6 +1,10 @@
 CREATE KEYSPACE IF NOT EXISTS search_engine
 WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
 USE search_engine;
+CREATE TABLE IF NOT EXISTS terms (
+    term_id TEXT PRIMARY KEY,
+    term_text TEXT
+);
 CREATE TABLE IF NOT EXISTS documents (
     doc_id TEXT PRIMARY KEY,
     title TEXT,
@@ -17,3 +21,4 @@ CREATE TABLE IF NOT EXISTS documents_stats (
     stat_name TEXT PRIMARY KEY,
     stat_value FLOAT
 );
+
